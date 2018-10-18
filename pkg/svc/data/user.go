@@ -7,3 +7,5 @@ type MyUsers struct {
 	Is_active bool   `gorm:"column:is_active"`
 	Age       int32  `gorm:"column:age"`
 }
+
+type MyUsersArr []MyUsers

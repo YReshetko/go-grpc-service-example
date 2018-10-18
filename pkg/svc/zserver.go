@@ -60,18 +60,7 @@ func (svr server) GetAllUsers(context.Context, *empty.Empty) (*pb.UsersResponse,
 	if err := svr.db.Table("my_users").Find(&users).Error; err != nil {
 		return nil, err
 	}
-
-	respUsers := make([]*pb.User, len(users))
-	for index, value := range users {
-
-		respUsers[index] = &pb.User{
-			UserId:       value.Id,
-			UserName:     value.Name,
-			UserSurname:  value.Surname,
-			UserAge:      value.Age,
-			IsActiveUser: value.Is_active,
-		}
-	}
+	respUsers := data.MyUsersArr(users).GetGrpcAnalogue().([]*pb.User)
 	out := pb.UsersResponse{respUsers}
 	return &out, nil
 }
@@ -80,13 +69,8 @@ func (svr server) GetUserById(ctx context.Context, usr *pb.User) (*pb.User, erro
 	if err := svr.db.Table("my_users").Where("id = ?", usr.UserId).First(&user).Error; err != nil{
 		return nil, err
 	}
-	return &pb.User{
-		UserId:       user.Id,
-		UserName:     user.Name,
-		UserSurname:  user.Surname,
-		UserAge:      user.Age,
-		IsActiveUser: user.Is_active,
-	}, nil
+	out := user.GetGrpcAnalogue().(pb.User)
+	return &out, nil
 }
 
 // NewBasicServer returns an instance of the default server interface
