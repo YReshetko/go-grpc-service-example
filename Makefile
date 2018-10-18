@@ -5,7 +5,8 @@ DOCKERFILE_PATH		:= $(CURDIR)/docker
 # configuration for image names
 USERNAME		:= $(USER)
 GIT_COMMIT		:= $(shell git describe --dirty=-unsupported --always || echo pre-commit)
-IMAGE_VERSION		?= $(USERNAME)-dev-$(GIT_COMMIT)
+#IMAGE_VERSION		?= $(USERNAME)-dev-$(GIT_COMMIT)
+IMAGE_VERSION		?= ltst
 
 # configuration for server binary and image
 SERVER_BINARY 		:= $(BUILD_PATH)/server
@@ -78,18 +79,16 @@ vendor-update:
 .PHONY: clean
 clean:
 	@docker rm $(shell docker ps -a -q) || true
-	@docker rmi -f $(shell docker images -q $(SERVER_IMAGE)) || true
 	@docker rmi -f $(shell docker images -q $(DB_IMAGE)) || true
+	@docker rmi -f $(shell docker images -q $(SERVER_IMAGE)) || true
 
 .PHONY: up
 up: docker
 		@docker-compose up -d db
 		@docker-compose up -d server
-
 .PHONY: down
 down:
 	@docker-compose down
-
 .PHONY: migrate-up
 migrate-up:
 	@$(DOCKER_RUNNER) --net="host" ${MIGRATETOOL_IMAGE} --verbose --path=$(MIGRATION_PATH_IN_CONTAINER)/ --database.dsn=$(DATABASE_URL) up

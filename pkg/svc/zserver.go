@@ -2,10 +2,10 @@ package svc
 
 import (
 	"context"
-	"my-app-example/pkg/pb"
-
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/jinzhu/gorm"
+	"my-app-example/pkg/pb"
+	"my-app-example/pkg/svc/data"
 )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -36,7 +36,7 @@ import (
 
 const (
 	// version is the current version of the service
-	version = "0.0.1"
+	version    = "0.0.1"
 	someString = "Example of randome string"
 )
 
@@ -52,8 +52,41 @@ func (server) GetVersion(context.Context, *empty.Empty) (*pb.VersionResponse, er
 func (server) GetSomeString(context.Context, *empty.Empty) (*pb.SomeStringResponse, error) {
 	return &pb.SomeStringResponse{SomeString: someString}, nil
 }
-func (server) TestPostMessage(ctx context.Context, val *pb.TestRequest) (*pb.SomeStringResponse, error){
+func (server) TestPostMessage(ctx context.Context, val *pb.TestRequest) (*pb.SomeStringResponse, error) {
 	return &pb.SomeStringResponse{SomeString: "Input string: " + val.Value}, nil
+}
+func (svr server) GetAllUsers(context.Context, *empty.Empty) (*pb.UsersResponse, error) {
+	users := []data.MyUsers{}
+	if err := svr.db.Table("my_users").Find(&users).Error; err != nil {
+		return nil, err
+	}
+
+	respUsers := make([]*pb.User, len(users))
+	for index, value := range users {
+
+		respUsers[index] = &pb.User{
+			UserId:       value.Id,
+			UserName:     value.Name,
+			UserSurname:  value.Surname,
+			UserAge:      value.Age,
+			IsActiveUser: value.Is_active,
+		}
+	}
+	out := pb.UsersResponse{respUsers}
+	return &out, nil
+}
+func (svr server) GetUserById(ctx context.Context, usr *pb.User) (*pb.User, error) {
+	user := data.MyUsers{}
+	if err := svr.db.Table("my_users").Where("id = ?", usr.UserId).First(&user).Error; err != nil{
+		return nil, err
+	}
+	return &pb.User{
+		UserId:       user.Id,
+		UserName:     user.Name,
+		UserSurname:  user.Surname,
+		UserAge:      user.Age,
+		IsActiveUser: user.Is_active,
+	}, nil
 }
 
 // NewBasicServer returns an instance of the default server interface

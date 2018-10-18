@@ -1,9 +1,7 @@
 version: '2'
 services:
   db:
-    build:
-      context: ./db/
-    image: my-app-example-db:rashetska-dev-2c708ca-unsupported
+    image: my-app-example-db:ltst
     environment:
     - POSTGRES_USER=postgres
     - POSTGRES_PASSWORD=postgres
@@ -12,7 +10,7 @@ services:
     - 5432:5432
     container_name: my-app-example-db-container
   server:
-    image: my-app-example-server:rashetska-dev-2c708ca-unsupported
+    image: my-app-example-server:ltst
     command:
     - --database.address=db
     - --database.port=5432
