@@ -1,0 +1,27 @@
+version: '2'
+services:
+  db:
+    build:
+      context: ./db/
+    image: my-app-example-db:rashetska-dev-2c708ca-unsupported
+    environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_DB=my_app_example
+    ports:
+    - 5432:5432
+    container_name: my-app-example-db-container
+  server:
+    image: my-app-example-server:rashetska-dev-2c708ca-unsupported
+    command:
+    - --database.address=db
+    - --database.port=5432
+    - --database.name=my_app_example
+    - --database.user=postgres
+    - --database.password=postgres
+    - --database.ssl=disable
+    ports:
+    - 8080:8080
+    container_name: my-app-example-server-container
+    links:
+    - db

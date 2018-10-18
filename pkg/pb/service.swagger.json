@@ -15,6 +15,48 @@
     "application/json"
   ],
   "paths": {
+    "/show": {
+      "post": {
+        "operationId": "TestPostMessage",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/serviceSomeStringResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/serviceTestRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MyAppExample"
+        ]
+      }
+    },
+    "/some-string": {
+      "get": {
+        "operationId": "GetSomeString",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/serviceSomeStringResponse"
+            }
+          }
+        },
+        "tags": [
+          "MyAppExample"
+        ]
+      }
+    },
     "/version": {
       "get": {
         "operationId": "GetVersion",
@@ -33,6 +75,22 @@
     }
   },
   "definitions": {
+    "serviceSomeStringResponse": {
+      "type": "object",
+      "properties": {
+        "someString": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceTestRequest": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "serviceVersionResponse": {
       "type": "object",
       "properties": {

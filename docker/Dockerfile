@@ -10,4 +10,4 @@ FROM alpine:latest AS runner
 WORKDIR /bin
 COPY --from=builder /go/src//my-app-example/bin/server .
 COPY pkg/pb/*.swagger.json tmp/www/swagger
-ENTRYPOINT ["server", "-swagger-dir", "tmp/www/swagger"]
+ENTRYPOINT ["server"]

@@ -37,6 +37,7 @@ import (
 const (
 	// version is the current version of the service
 	version = "0.0.1"
+	someString = "Example of randome string"
 )
 
 // Default implementation of the MyAppExample server interface
@@ -45,6 +46,14 @@ type server struct{ db *gorm.DB }
 // GetVersion returns the current version of the service
 func (server) GetVersion(context.Context, *empty.Empty) (*pb.VersionResponse, error) {
 	return &pb.VersionResponse{Version: version}, nil
+}
+
+// GetVersion returns the current version of the service
+func (server) GetSomeString(context.Context, *empty.Empty) (*pb.SomeStringResponse, error) {
+	return &pb.SomeStringResponse{SomeString: someString}, nil
+}
+func (server) TestPostMessage(ctx context.Context, val *pb.TestRequest) (*pb.SomeStringResponse, error){
+	return &pb.SomeStringResponse{SomeString: "Input string: " + val.Value}, nil
 }
 
 // NewBasicServer returns an instance of the default server interface

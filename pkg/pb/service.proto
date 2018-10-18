@@ -31,6 +31,24 @@ option go_package = "my-app-example/pkg/pb;pb";
 message VersionResponse {
   string version = 1;
 }
+message SomeStringResponse {
+  string someString = 1;
+}
+message TestRequest{
+  string value = 1;
+}
+
+message UserResponse{
+  int32 user_id = 1;
+  string user_name = 2;
+  string user_surname = 3;
+  bool is_active_user = 4;
+  int32 user_age = 5;
+}
+
+message UsersResponse{
+  repeated UserResponse users = 1;
+}
 
 
 
@@ -43,6 +61,30 @@ service MyAppExample {
     option (google.api.http) = {
       get: "/version"
     };
+  }
+  rpc GetSomeString (google.protobuf.Empty) returns (SomeStringResponse) {
+    // TODO: Provide mappings between REST endpoints and service methods.
+    option (google.api.http) = {
+	  get: "/some-string"
+    };
+  }
+  rpc TestPostMessage (TestRequest) returns (SomeStringResponse) {
+    // TODO: Provide mappings between REST endpoints and service methods.
+    option (google.api.http) = {
+  	  post: "/show"
+  	  body: "*"
+    };
+  }
+
+  rpc GetAllUsers (google.protobuf.Empty) return (UsersResponse) {
+    option (google.api.http) = {
+      get: "/users"
+    }
+  }
+  rpc GetUserById (google.protobuf.Empty) return (UserResponse){
+    option (google.api.http) = {
+	  get: "/user/{id}"
+	}
   }
 
 }

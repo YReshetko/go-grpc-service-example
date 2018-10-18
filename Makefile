@@ -11,6 +11,7 @@ IMAGE_VERSION		?= $(USERNAME)-dev-$(GIT_COMMIT)
 SERVER_BINARY 		:= $(BUILD_PATH)/server
 SERVER_PATH		:= $(PROJECT_ROOT)/cmd/server
 SERVER_IMAGE		:= my-app-example-server
+DB_IMAGE		:= my-app-example-db
 SERVER_DOCKERFILE	:= $(DOCKERFILE_PATH)/Dockerfile
 
 # configuration for the protobuf gentool
@@ -27,6 +28,9 @@ DATABASE_USERNAME	?= postgres
 DATABASE_PASSWORD	?= postgres
 DATABASE_NAME       = my_app_example
 DATABASE_URL        ?= postgres://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@$(DATABASE_ADDRESS)/$(DATABASE_NAME)?sslmode=disable
+DB_SRC              := $(CURDIR)/db
+IMAGE_DEV_DB        ?= test-db:test
+DB_DOCKER_FILE      := $(DB_SRC)/Dockerfile
 
 MIGRATETOOL_IMAGE           = infoblox/migrate:latest
 MIGRATION_PATH_IN_CONTAINER = $(SRCROOT_IN_CONTAINER)/db/migrations
@@ -50,6 +54,7 @@ test: fmt
 
 .PHONY: docker
 docker:
+	@docker build -f $(DB_DOCKER_FILE) -t $(DB_IMAGE):$(IMAGE_VERSION) .
 	@docker build -f $(SERVER_DOCKERFILE) -t $(SERVER_IMAGE):$(IMAGE_VERSION) .
 	@docker image prune -f --filter label=stage=server-intermediate
 .PHONY: protobuf
@@ -72,7 +77,18 @@ vendor-update:
 
 .PHONY: clean
 clean:
+	@docker rm $(shell docker ps -a -q) || true
 	@docker rmi -f $(shell docker images -q $(SERVER_IMAGE)) || true
+	@docker rmi -f $(shell docker images -q $(DB_IMAGE)) || true
+
+.PHONY: up
+up: docker
+		@docker-compose up -d db
+		@docker-compose up -d server
+
+.PHONY: down
+down:
+	@docker-compose down
 
 .PHONY: migrate-up
 migrate-up:

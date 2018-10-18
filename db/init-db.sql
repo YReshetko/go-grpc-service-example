@@ -1,0 +1,7 @@
+CREATE TABLE my_users (
+    id INTEGER NOT NULL,
+    name CHARACTER VARYING(256) NOT NULL,
+    surname CHARACTER VARYING(256) NOT NULL,
+    is_active BOOLEAN NOT NULL default FALSE,
+    age INTEGER NOT NULL
+);
