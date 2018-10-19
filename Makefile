@@ -55,8 +55,8 @@ test: fmt
 
 .PHONY: docker
 docker:
-	@docker build -f $(DB_DOCKER_FILE) -t $(DB_IMAGE):$(IMAGE_VERSION) .
 	@docker build -f $(SERVER_DOCKERFILE) -t $(SERVER_IMAGE):$(IMAGE_VERSION) .
+	@docker build -f $(DB_DOCKER_FILE) -t $(DB_IMAGE):$(IMAGE_VERSION) .
 	@docker image prune -f --filter label=stage=server-intermediate
 .PHONY: protobuf
 protobuf:
@@ -88,6 +88,7 @@ clean:
 up: docker
 		@docker-compose up -d db
 		@docker-compose up -d server
+		@docker-compose up -d swagger
 .PHONY: down
 down:
 	@docker-compose down

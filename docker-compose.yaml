@@ -12,14 +12,25 @@ services:
   server:
     image: my-app-example-server:ltst
     command:
+    - --gateway.endpoint=/
     - --database.address=db
     - --database.port=5432
     - --database.name=my_app_example
     - --database.user=postgres
     - --database.password=postgres
     - --database.ssl=disable
+    - --gateway.swaggerFile=tmp/www/swagger
     ports:
     - 8080:8080
     container_name: my-app-example-server-container
     links:
     - db
+  swagger:
+    image: swaggerapi/swagger-ui
+    environment:
+    - API_URL=http://localhost:8080/swagger/
+    ports:
+    - 8090:8080
+    container_name: my-app-swagger-container
+    links:
+    - server
