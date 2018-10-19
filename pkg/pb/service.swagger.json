@@ -57,6 +57,32 @@
         ]
       }
     },
+    "/user": {
+      "post": {
+        "operationId": "AddNewUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/serviceUserResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/serviceUser"
+            }
+          }
+        ],
+        "tags": [
+          "MyAppExample"
+        ]
+      }
+    },
     "/user/{user_id}": {
       "get": {
         "operationId": "GetUserById",
@@ -64,7 +90,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/serviceUser"
+              "$ref": "#/definitions/serviceUserResponse"
             }
           }
         },
@@ -181,10 +207,18 @@
         }
       }
     },
+    "serviceUserResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "$ref": "#/definitions/serviceUser"
+        }
+      }
+    },
     "serviceUsersResponse": {
       "type": "object",
       "properties": {
-        "users": {
+        "results": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/serviceUser"

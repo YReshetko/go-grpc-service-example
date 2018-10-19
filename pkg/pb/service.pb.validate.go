@@ -311,6 +311,83 @@ var _ interface {
 	ErrorName() string
 } = UserValidationError{}
 
+// Validate checks the field values on UserResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
+func (m *UserResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetResults()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return UserResponseValidationError{
+				field:  "Results",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// UserResponseValidationError is the validation error returned by
+// UserResponse.Validate if the designated constraints aren't met.
+type UserResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserResponseValidationError) ErrorName() string { return "UserResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e UserResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserResponseValidationError{}
+
 // Validate checks the field values on UsersResponse with the rules defined in
 // the proto definition for this message. If any rules are violated, an error
 // is returned.
@@ -319,7 +396,7 @@ func (m *UsersResponse) Validate() error {
 		return nil
 	}
 
-	for idx, item := range m.GetUsers() {
+	for idx, item := range m.GetResults() {
 		_, _ = idx, item
 
 		if v, ok := interface{}(item).(interface {
@@ -327,7 +404,7 @@ func (m *UsersResponse) Validate() error {
 		}); ok {
 			if err := v.Validate(); err != nil {
 				return UsersResponseValidationError{
-					field:  fmt.Sprintf("Users[%v]", idx),
+					field:  fmt.Sprintf("Results[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}

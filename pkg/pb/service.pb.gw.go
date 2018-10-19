@@ -104,6 +104,19 @@ func request_MyAppExample_GetUserById_0(ctx context.Context, marshaler runtime.M
 
 }
 
+func request_MyAppExample_AddNewUser_0(ctx context.Context, marshaler runtime.Marshaler, client MyAppExampleClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq User
+	var metadata runtime.ServerMetadata
+
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.AddNewUser(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
 // RegisterMyAppExampleHandlerFromEndpoint is same as RegisterMyAppExampleHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
 func RegisterMyAppExampleHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
@@ -287,6 +300,35 @@ func RegisterMyAppExampleHandlerClient(ctx context.Context, mux *runtime.ServeMu
 
 	})
 
+	mux.Handle("POST", pattern_MyAppExample_AddNewUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		if cn, ok := w.(http.CloseNotifier); ok {
+			go func(done <-chan struct{}, closed <-chan bool) {
+				select {
+				case <-done:
+				case <-closed:
+					cancel()
+				}
+			}(ctx.Done(), cn.CloseNotify())
+		}
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_MyAppExample_AddNewUser_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_MyAppExample_AddNewUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	return nil
 }
 
@@ -300,6 +342,8 @@ var (
 	pattern_MyAppExample_GetAllUsers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"users"}, ""))
 
 	pattern_MyAppExample_GetUserById_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"user", "user_id"}, ""))
+
+	pattern_MyAppExample_AddNewUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"user"}, ""))
 )
 
 var (
@@ -312,4 +356,6 @@ var (
 	forward_MyAppExample_GetAllUsers_0 = runtime.ForwardResponseMessage
 
 	forward_MyAppExample_GetUserById_0 = runtime.ForwardResponseMessage
+
+	forward_MyAppExample_AddNewUser_0 = runtime.ForwardResponseMessage
 )

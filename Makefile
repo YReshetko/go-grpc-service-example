@@ -68,6 +68,9 @@ protobuf:
 	--validate_out="lang=go:." \
 	--swagger_out=:. $(PROJECT_ROOT)/pkg/pb/service.proto
 
+.PHONY:build
+build: protobuf
+
 .PHONY: vendor
 vendor:
 	@dep ensure -vendor-only
@@ -78,7 +81,6 @@ vendor-update:
 
 .PHONY: clean
 clean:
-	@docker rm $(shell docker ps -a -q) || true
 	@docker rmi -f $(shell docker images -q $(DB_IMAGE)) || true
 	@docker rmi -f $(shell docker images -q $(SERVER_IMAGE)) || true
 

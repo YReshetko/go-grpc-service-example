@@ -46,8 +46,12 @@ message User{
   int32 user_age = 5;
 }
 
+message UserResponse{
+  User results = 1;
+}
+
 message UsersResponse{
-  repeated User users = 1;
+  repeated User results = 1;
 }
 
 
@@ -81,10 +85,19 @@ service MyAppExample {
       get: "/users"
     };
   }
-  rpc GetUserById (User) returns (User){
+  rpc GetUserById (User) returns (UserResponse){
     option (google.api.http) = {
 	  get: "/user/{user_id}"
 	};
   }
+  rpc AddNewUser (User) returns (UserResponse){
+    option (google.api.http) = {
+  	  post: "/user"
+  	  body: "*"
+  	};
+  }
+
+
+
 
 }

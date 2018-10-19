@@ -3,6 +3,7 @@ package svc
 import (
 	"context"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/jinzhu/gorm"
 	"my-app-example/pkg/pb"
 	"my-app-example/pkg/svc/data"
@@ -64,13 +65,19 @@ func (svr server) GetAllUsers(context.Context, *empty.Empty) (*pb.UsersResponse,
 	out := pb.UsersResponse{respUsers}
 	return &out, nil
 }
-func (svr server) GetUserById(ctx context.Context, usr *pb.User) (*pb.User, error) {
+func (svr server) GetUserById(ctx context.Context, usr *pb.User) (*pb.UserResponse, error) {
 	user := data.MyUsers{}
 	if err := svr.db.Table("my_users").Where("id = ?", usr.UserId).First(&user).Error; err != nil{
 		return nil, err
 	}
 	out := user.GetGrpcAnalogue().(pb.User)
-	return &out, nil
+	return &pb.UserResponse{&out}, nil
+}
+func (svr server) AddNewUser(ctx context.Context, usr *pb.User) (*pb.UserResponse, error){
+	if err:=svr.db.Table("my_users").Create(&usr).Error; err != nil{
+		return nil, err
+	}
+	return &pb.UserResponse{usr}, gateway.SetCreated(ctx, "New user is created")
 }
 
 // NewBasicServer returns an instance of the default server interface
