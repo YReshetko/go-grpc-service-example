@@ -132,6 +132,86 @@
         "tags": [
           "MyAppExample"
         ]
+      },
+      "delete": {
+        "operationId": "DeleteUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/serviceUserResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "user_name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user_surname",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "is_active_user",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
+            "name": "user_age",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "MyAppExample"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/serviceUserResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/serviceUser"
+            }
+          }
+        ],
+        "tags": [
+          "MyAppExample"
+        ]
       }
     },
     "/users": {
@@ -142,6 +222,22 @@
             "description": "",
             "schema": {
               "$ref": "#/definitions/serviceUsersResponse"
+            }
+          }
+        },
+        "tags": [
+          "MyAppExample"
+        ]
+      }
+    },
+    "/ver": {
+      "get": {
+        "operationId": "GetVersion2",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/serviceVersionResponse"
             }
           }
         },

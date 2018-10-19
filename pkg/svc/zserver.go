@@ -40,6 +40,7 @@ const (
 	version    = "0.0.1"
 	someString = "Example of randome string"
 )
+const userTableName string = "my_users"
 
 // Default implementation of the MyAppExample server interface
 type server struct{ db *gorm.DB }
@@ -58,7 +59,7 @@ func (server) TestPostMessage(ctx context.Context, val *pb.TestRequest) (*pb.Som
 }
 func (svr server) GetAllUsers(context.Context, *empty.Empty) (*pb.UsersResponse, error) {
 	users := []data.MyUsers{}
-	if err := svr.db.Table("my_users").Find(&users).Error; err != nil {
+	if err := svr.users().Find(&users).Error; err != nil {
 		return nil, err
 	}
 	respUsers := data.MyUsersArr(users).GetGrpcAnalogue().([]*pb.User)
@@ -67,19 +68,48 @@ func (svr server) GetAllUsers(context.Context, *empty.Empty) (*pb.UsersResponse,
 }
 func (svr server) GetUserById(ctx context.Context, usr *pb.User) (*pb.UserResponse, error) {
 	user := data.MyUsers{}
-	if err := svr.db.Table("my_users").Where("id = ?", usr.UserId).First(&user).Error; err != nil{
+	if err := svr.users().Where("id = ?", usr.UserId).First(&user).Error; err != nil {
 		return nil, err
 	}
 	out := user.GetGrpcAnalogue().(pb.User)
 	return &pb.UserResponse{&out}, nil
 }
-func (svr server) AddNewUser(ctx context.Context, usr *pb.User) (*pb.UserResponse, error){
-	if err:=svr.db.Table("my_users").Create(&data.MyUsers{
-		usr.UserId, usr.UserName, usr.UserSurname, usr.IsActiveUser, usr.UserAge,
-	}).Error; err != nil{
+func (svr server) AddNewUser(ctx context.Context, usr *pb.User) (*pb.UserResponse, error) {
+	if err := svr.users().Create(&data.MyUsers{
+		Name:      usr.UserName,
+		Surname:   usr.UserSurname,
+		Is_active: usr.IsActiveUser,
+		Age:       usr.UserAge,
+	}).Error; err != nil {
 		return nil, err
 	}
 	return &pb.UserResponse{usr}, gateway.SetCreated(ctx, "New user is created")
+}
+
+func (svr server) UpdateUser(ctx context.Context, usr *pb.User) (*pb.UserResponse, error) {
+	user := data.MyUsers{}
+	if err := svr.users().Where("id = ?", usr.UserId).First(&user).Error; err != nil {
+		return nil, err
+	}
+	user.Name = usr.UserName
+	user.Surname = usr.UserSurname
+	user.Is_active = usr.IsActiveUser
+	user.Age = usr.UserAge
+	if err := svr.users().Save(&user).Error; err != nil{
+		return nil, err
+	}
+	return &pb.UserResponse{usr}, gateway.SetUpdated(ctx, "User is updated")
+}
+func (svr server) DeleteUser(ctx context.Context, usr *pb.User) (*pb.UserResponse, error) {
+	deletedUser := data.MyUsers{}
+	if err := svr.users().Where("id = ?", usr.UserId).Delete(&deletedUser).Error; err != nil {
+		return nil, err
+	}
+	out := deletedUser.GetGrpcAnalogue().(pb.User)
+	return &pb.UserResponse{&out}, gateway.SetDeleted(ctx, "User is deleted")
+}
+func (svr server) users() *gorm.DB {
+	return svr.db.Table(userTableName)
 }
 
 // NewBasicServer returns an instance of the default server interface

@@ -64,6 +64,9 @@ service MyAppExample {
     // TODO: Provide mappings between REST endpoints and service methods.
     option (google.api.http) = {
       get: "/version"
+	  additional_bindings{
+	    get: "/ver"
+	  }
     };
   }
   rpc GetSomeString (google.protobuf.Empty) returns (SomeStringResponse) {
@@ -96,7 +99,17 @@ service MyAppExample {
   	  body: "*"
   	};
   }
-
+  rpc UpdateUser (User) returns (UserResponse){
+	option (google.api.http) = {
+	  put: "/user/{user_id}"
+	  body: "*"
+    };
+  }
+  rpc DeleteUser (User) returns (UserResponse){
+  	option (google.api.http) = {
+  	  delete: "/user/{user_id}"
+    };
+  }
 
 
 
