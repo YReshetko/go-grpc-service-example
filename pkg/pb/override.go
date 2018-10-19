@@ -9,4 +9,5 @@ func init()  {
 	forward_MyAppExample_GetUserById_0 = fwd
 	forward_MyAppExample_GetVersion_0 = fwd
 	forward_MyAppExample_TestPostMessage_0 = fwd
+	forward_MyAppExample_AddNewUser_0 = fwd
 }

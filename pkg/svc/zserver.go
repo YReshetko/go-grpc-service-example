@@ -74,7 +74,9 @@ func (svr server) GetUserById(ctx context.Context, usr *pb.User) (*pb.UserRespon
 	return &pb.UserResponse{&out}, nil
 }
 func (svr server) AddNewUser(ctx context.Context, usr *pb.User) (*pb.UserResponse, error){
-	if err:=svr.db.Table("my_users").Create(&usr).Error; err != nil{
+	if err:=svr.db.Table("my_users").Create(&data.MyUsers{
+		usr.UserId, usr.UserName, usr.UserSurname, usr.IsActiveUser, usr.UserAge,
+	}).Error; err != nil{
 		return nil, err
 	}
 	return &pb.UserResponse{usr}, gateway.SetCreated(ctx, "New user is created")
